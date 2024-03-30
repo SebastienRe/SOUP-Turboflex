@@ -23,3 +23,8 @@ L'ensemble de l'application devra mettre en œuvre au moins 2 des 3 technologies
 Serveurs de flux multimédia : Middleware Objet, Ice
 
 ![alt text](image.png)
+
+# Compléments 
+
+https://huggingface.co/Word2vec/fauconnier_frWac_non_lem_no_postag_no_phrase_200_skip_cut100/tree/main
+Lien vers le téléchargement du model à placer dans le dossier tal/models
