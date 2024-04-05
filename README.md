@@ -28,3 +28,11 @@ Serveurs de flux multimédia : Middleware Objet, Ice
 
 https://huggingface.co/Word2vec/fauconnier_frWac_non_lem_no_postag_no_phrase_200_skip_cut100/tree/main
 Lien vers le téléchargement du model à placer dans le dossier tal/models
+
+# Comment utiliser AsrCli
+
+Créer un fichier config.yaml comme suit dans `./asr` :
+```yaml
+#   ./asr/config.yaml
+api_key: "votre_clé_openai"
+```
