@@ -1,2 +1,3 @@
-config.yaml
 test_audio/*
+tmp/*
+!tmp/temporary_audio_files_here.txt
