@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,13 +17,17 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     private Button recordButton;
+    private ProgressBar progressBar;
     private MediaRecorder mediaRecorder;
     private String outputFile;
+    private final VoiceCommandService voiceCommandService = VoiceCommandService.getInstance();
 
     private static final int PERMISSIONS_REQUEST_CODE = 1001;
     private static final String[] PERMISSIONS = {
@@ -51,21 +56,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recordButton = findViewById(R.id.record_button);
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
 
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    if(checkPermissions()) {
-                        startRecording();
-                    } else {
-                        requestPermissions();
-                    }
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    stopRecording();
-                    playRecording();
+        recordButton.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                if(checkPermissions()) {
+                    startRecording();
+                } else {
+                    requestPermissions();
                 }
-                return true;
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                recordButton.setEnabled(false);
+                stopRecording();
+                playRecording();
+                voiceCommandService.executeCommand(outputFile);
+                recordButton.setEnabled(true);
+            }
+            return true;
+        });
+
+        voiceCommandService.getIsLoadingMutableLiveData().observeForever(isLoading -> {
+            System.out.println("isLoading : "+isLoading);
+            if(isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
             }
         });
     }

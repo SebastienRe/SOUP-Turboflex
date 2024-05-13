@@ -15,7 +15,6 @@ def transcribe_audio(file_path):
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe():
-    print()
     audio_file = request.files['audio']
     
     extension = audio_file.filename.split('.')[-1]
@@ -32,4 +31,6 @@ def transcribe():
 
     os.remove(filename)
 
+    print(transcription)
+    
     return transcription
