@@ -51,14 +51,13 @@ python -m venv .venv
 ## activation virtual env
 
 ```bash
-.\.venv\Scripts\activate
+.\.venv\Scripts\activate # Sur Windows
 ```
 
 ## lancement
 
 ```bash
-flask --app tal/Flask.py run --port 6000
-python stream/index.py 15000 all
-
+python ast/AsrServer.py
 python tal/Flask.py
+python stream/index.py 15000 all
 ```
