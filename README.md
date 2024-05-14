@@ -29,10 +29,34 @@ Serveurs de flux multimédia : Middleware Objet, Ice
 https://huggingface.co/Word2vec/fauconnier_frWac_non_lem_no_postag_no_phrase_200_skip_cut100/tree/main
 Lien vers le téléchargement du model à placer dans le dossier tal/models
 
+```bash
+pip install -r requirements.txt
+```
+
 # Comment utiliser AsrCli
 
 Créer un fichier config.yaml comme suit dans `./asr` :
 ```yaml
 #   ./asr/config.yaml
 api_key: "votre_clé_openai"
+```
+
+# lancement des serveurs
+## creation virtual env
+
+```bash
+python -m venv .venv
+```
+
+## activation virtual env
+
+```bash
+.\.venv\Scripts\activate
+```
+
+## lancement
+
+```bash
+flask --app tal/Flask.py run --port 6000
+python stream/index.py 15000 all
 ```

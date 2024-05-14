@@ -206,6 +206,7 @@ class MusicLibraryI(Soup.MusicLibrary):
         return
 
 with Ice.initialize() as communicator:
+    print("Lancement du serveur de streaming...")
     adapter = communicator.createObjectAdapterWithEndpoints("MusicLibraryAdapter", "ws -p " + str(port)) # Création de l'adaptateur qui sert à communiquer avec le client
     object = MusicLibraryI() # Création de l'objet servant
     adapter.add(object, communicator.stringToIdentity("MusicLibrary")) # Ajout de l'objet servant à l'adaptateur
