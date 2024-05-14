@@ -7,7 +7,9 @@ appcompat = "1.6.1"
 material = "1.11.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
-ice = "1.5.0"
+ice = "3.7.10"
+iceBuilder = "1.5.0"
+vlcj = "4.8.0"
 retrofit = "2.9.0"
 converterScalars = "2.9.0"
 converterGson = "2.9.0"
@@ -23,8 +25,11 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 retrofit = { group = "com.squareup.retrofit2", name="retrofit", version.ref = "retrofit" }
 converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "converterScalars" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+ice = { group = "com.zeroc", name = "ice", version.ref = "ice" }
+vlcj = { group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-ice = {id = "com.zeroc.gradle.ice-builder.slice", version.ref = "ice"}
+iceBuilder = {id = "com.zeroc.gradle.ice-builder.slice", version.ref = "iceBuilder"}
+
 

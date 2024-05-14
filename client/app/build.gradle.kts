@@ -1,10 +1,18 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.iceBuilder)
 }
 
 android {
     namespace = "com.example.soupturboflex"
     compileSdk = 34
+
+    packaging {
+        resources {
+            excludes.add("META-INF/AL2.0")
+            excludes.add("META-INF/LGPL2.1")
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.soupturboflex"
@@ -42,4 +50,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.scalars)
     implementation(libs.converter.gson)
+    implementation(libs.ice)
+    implementation(libs.vlcj)
+
 }

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,30 +13,33 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import Soup.Song;
+
+@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class MainActivity extends AppCompatActivity {
     private Button recordButton;
     private ProgressBar progressBar;
     private MediaRecorder mediaRecorder;
     private String outputFile;
-    private final VoiceCommandService voiceCommandService = VoiceCommandService.getInstance();
+    private VoiceCommandService voiceCommandService;
 
-    private static final int PERMISSIONS_REQUEST_CODE = 1001;
     private static final String[] PERMISSIONS = {
             android.Manifest.permission.RECORD_AUDIO,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_MEDIA_AUDIO,
     };
+
 
     /**
      * Reason for SuppressLint : I am cold-hearted and don't care about making the world a
@@ -43,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        voiceCommandService = VoiceCommandService.getInstance(this);
+        if (!checkPermissions()) throw new RuntimeException("Permissions not granted");
+        IceService.init();
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -61,12 +70,10 @@ public class MainActivity extends AppCompatActivity {
 
         recordButton.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                if(checkPermissions()) {
-                    startRecording();
-                } else {
-                    requestPermissions();
-                }
+                System.out.println("Recording...");
+                startRecording();
             } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                System.out.println("Recording stopped");
                 recordButton.setEnabled(false);
                 stopRecording();
                 playRecording();
@@ -87,18 +94,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkPermissions() {
+        //cette fonction regarde si les permissions sont accordées et les demande si elles ne le sont pas, et retourne true si elles sont toutes accordées
+        List<String> permissionsToRequest = new ArrayList<>();
         for (String permission : PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) !=
-                    PackageManager.PERMISSION_GRANTED)
-            {
-                return false;
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(permission);
             }
         }
-        return true;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_REQUEST_CODE);
+        if (!permissionsToRequest.isEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), 1); // demande les permissions
+            System.out.println(permissionsToRequest);
+            return false; // au moins une permission n'est pas accordée
+        }
+        return true; // toutes les permissions sont accordées
     }
 
     private void startRecording() {
@@ -107,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mediaRecorder.setOutputFile(outputFile);
+            mediaRecorder.setOutputFile(outputFile); // Set the file to save the recording
             try {
                 mediaRecorder.prepare();
             } catch (IOException e) {

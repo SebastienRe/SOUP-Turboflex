@@ -57,7 +57,22 @@ python -m venv .venv
 ## lancement
 
 ```bash
-python ast/AsrServer.py
+cd asr
+python AsrServer.py
 python tal/Flask.py
 python stream/index.py 15000 all
+```
+
+### Debug
+
+```bash
+adb reverse tcp:5000 tcp:5000
+adb reverse tcp:5001 tcp:5001
+adb reverse tcp:15000 tcp:15000
+
+adb reverse tcp:12345 tcp:12345
+adb reverse tcp:12346 tcp:12346
+adb reverse tcp:12347 tcp:12347
+adb reverse tcp:12348 tcp:12348
+adb reverse tcp:12349 tcp:12349
 ```
