@@ -41,4 +41,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.retrofit)
     implementation(libs.converter.scalars)
+    implementation(libs.converter.gson)
 }

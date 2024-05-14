@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer;
 public class VoiceCommandService {
     private static VoiceCommandService INSTANCE;
     private final TranscriptionService transcriptionService = TranscriptionService.getInstance();
+    private final ActionService actionService = ActionService.getInstance();
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<String> transcription = new MutableLiveData<>();
@@ -24,16 +25,28 @@ public class VoiceCommandService {
 
     public void executeCommand(String audioFileName) {
         isLoading.postValue(true);
-        Observer<String> observer = new Observer<String>() {
+
+        Observer<ActionCouple> actionCoupleObserver = new Observer<ActionCouple>() {
+            @Override
+            public void onChanged(ActionCouple actionCouple) {
+                System.out.println(actionCouple.action + " on " + actionCouple.music);
+                // TODO : execute the action with Ice here
+                isLoading.postValue(false);
+                actionService.getActionCoupleMutableLiveData().removeObserver(this);
+            }
+        };
+
+        Observer<String> transcriptionObserver = new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 transcription.postValue(s);
-                isLoading.postValue(false);
+                actionService.getActionCoupleMutableLiveData().observeForever(actionCoupleObserver);
+                actionService.getAction(s);
                 transcriptionService.getTranscriptionMutableLiveData().removeObserver(this);
             }
         };
 
-        transcriptionService.getTranscriptionMutableLiveData().observeForever(observer);
+        transcriptionService.getTranscriptionMutableLiveData().observeForever(transcriptionObserver);
         transcriptionService.transcribe(audioFileName);
     }
 
