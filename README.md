@@ -59,4 +59,6 @@ python -m venv .venv
 ```bash
 flask --app tal/Flask.py run --port 6000
 python stream/index.py 15000 all
+
+python tal/Flask.py
 ```
