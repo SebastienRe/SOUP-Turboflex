@@ -6,7 +6,7 @@ talManager = TalManager()
 
 
 ACTIONS = {
-    "jouer" : ["commencer", "jouer", "lancer", "démarrer", "joue", "lance", "démarre", "commence"],
+    "jouer" : ["commencer", "jouer", "lancer", "démarrer", "joue", "lance", "démarre", "commence", "jou"],
     "pause" : ["stop","pause", "arrêter", "suspendre", "eteindre", "couper", "arreter", "stopper", "pauser", "eteint"],
     "relance" : ["recommence", "reprendre", "relancer", "rejouer", "relance", "reprend", "continue"],
     "baisser" : ["baisser", "diminuer", "réduire", "abaisser", "baisse", "diminue", "réduit", "abaisse"],
@@ -14,12 +14,7 @@ ACTIONS = {
 }
 
 MUSIQUES = [
-    "Bohemian Rhapsody", "Hotel California", "Stairway to Heaven", "Imagine", 
-    "Smells Like Teen Spirit", "Like a Rolling Stone", "Hey Jude", "Sweet Child O'Mine", 
-    "Billie Jean", "Light My Fire", "Comfortably Numb", "Purple Haze", "A Day in the Life", 
-    "Whole Lotta Love", "Layla", "Sympathy for the Devil", "London Calling", "Heart of Gold", 
-    "Wish You Were Here", "Free Bird", "All Along the Watchtower", "Born to Run", "Superstition", 
-    "Purple Rain", "Let's Stay Together"
+    "Savoir Aimer", "L'aventurier", "Je marche seul"
 ]
 
 @app.route('/')
