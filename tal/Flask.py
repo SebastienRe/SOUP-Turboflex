@@ -6,7 +6,7 @@ talManager = TalManager()
 
 
 ACTIONS = {
-    "jouer" : ["commencer", "jouer", "lancer", "démarrer", "joue", "lance", "démarre", "commence"],
+    "jouer" : ["commencer", "jouer", "lancer", "démarrer", "joue", "jou", "lance", "démarre", "commence"],
     "pause" : ["stop","pause", "arrêter", "suspendre", "eteindre", "couper", "arreter", "stopper", "pauser", "eteint"],
     "relance" : ["recommence", "reprendre", "relancer", "rejouer", "relance", "reprend", "continue"],
     "baisser" : ["baisser", "diminuer", "réduire", "abaisser", "baisse", "diminue", "réduit", "abaisse"],
