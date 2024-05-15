@@ -42,8 +42,6 @@ public class TranscriptionService {
     }
 
     public void transcribe(String filename) {
-
-        /*
         File file = new File(filename);
         MultipartBody.Part filePart = MultipartBody.Part.createFormData(
                 "audio",
@@ -63,9 +61,7 @@ public class TranscriptionService {
                 System.err.println("error : "+t.getMessage());
                 transcription.postValue(null);
             }
-        });*/
-
-        transcription.postValue("Joue la Vache");
+        });
     }
 
     public MutableLiveData<String> getTranscriptionMutableLiveData() {
