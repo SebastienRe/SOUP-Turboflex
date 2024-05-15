@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 def transcribe_audio(file_path):
     model = whisper.load_model("small")
-    result = model.transcribe(file_path)
+    result = model.transcribe(file_path, language="fr")
 
     return result['text']
 

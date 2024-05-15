@@ -1,10 +1,10 @@
 package com.example.soupturboflex;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import Soup.Song;
-
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class MainActivity extends AppCompatActivity {
     private Button recordButton;
@@ -37,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String[] PERMISSIONS = {
             android.Manifest.permission.RECORD_AUDIO,
-            android.Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
     };
 
 
@@ -49,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         voiceCommandService = VoiceCommandService.getInstance(this);
+
         if (!checkPermissions()) throw new RuntimeException("Permissions not granted");
-        IceService.init();
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);

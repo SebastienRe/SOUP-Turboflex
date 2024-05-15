@@ -59,8 +59,10 @@ python -m venv .venv
 ```bash
 cd asr
 python AsrServer.py
+cd ../
 python tal/Flask.py
-python stream/index.py 15000 all
+cd stream
+python SOUPServer.py
 ```
 
 ### Debug
@@ -69,10 +71,6 @@ python stream/index.py 15000 all
 adb reverse tcp:5000 tcp:5000
 adb reverse tcp:5001 tcp:5001
 adb reverse tcp:15000 tcp:15000
-
+adb reverse tcp:10000 tcp:10000
 adb reverse tcp:12345 tcp:12345
-adb reverse tcp:12346 tcp:12346
-adb reverse tcp:12347 tcp:12347
-adb reverse tcp:12348 tcp:12348
-adb reverse tcp:12349 tcp:12349
 ```

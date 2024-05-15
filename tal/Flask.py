@@ -28,10 +28,13 @@ def text_to_action(text):
         text = text.replace(word, "").strip() # On retire le mot trouvé de la phrase
         music = talManager.get_the_most_similar_music(text, MUSIQUES)
         if music is not None:
+            print([action, music])
             return [action, music]
         else :
+            print([action])
             return [action]
     else :
+        print([action])
         return [action]
 
 if __name__ == '__main__':

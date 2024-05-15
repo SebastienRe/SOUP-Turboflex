@@ -1,34 +1,26 @@
 package com.example.soupturboflex;
 
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
-import Soup.Song;
+import java.util.ArrayList;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VoiceCommandService {
     private static VoiceCommandService INSTANCE;
     private final TranscriptionService transcriptionService = TranscriptionService.getInstance();
     private final ActionService actionService = ActionService.getInstance();
+    private final StreamingService streamingService = StreamingService.getInstance();
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    private final MutableLiveData<String> transcription = new MutableLiveData<>();
-
-    private MediaPlayer mediaPlayer;
 
     private Context context;
 
-    private VoiceCommandService(Context contextp) {
-        observeTranscription();
+    private VoiceCommandService(Context context) {
         isLoading.postValue(false);
-        context = contextp;
+        this.context = context;
     }
 
     public static VoiceCommandService getInstance(Context context) {
@@ -41,100 +33,44 @@ public class VoiceCommandService {
     public void executeCommand(String audioFileName) {
         isLoading.postValue(true);
 
-        Observer<ActionCouple> actionCoupleObserver = new Observer<ActionCouple>() {
+        transcriptionService.transcribe(audioFileName, new Callback<String>() {
             @Override
-            public void onChanged(ActionCouple actionCouple) {
-                System.out.println(actionCouple.action + " on " + actionCouple.music);
-                List<Song> songs = IceService.getSongs(); // Get songs from server
-                Song song = null; // Find the song to play
-                if (actionCouple.music != null) {
-                    for (Song s : songs) {
-                        if (s.title.equals(actionCouple.music)) {
-                            song = s;
-                            break;
-                        }
+            public void onResponse(Call<String> call, Response<String> response) {
+                String transcription = response.body();
+                System.out.println("Transcription : " + transcription);
+                actionService.getAction(transcription, new Callback<ArrayList<String>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<String>> call, Response<ArrayList<String>> response) {
+                        ArrayList<String> actionList = response.body();
+                        String action = actionList.get(0);
+                        String music = actionList.size() > 1 ? actionList.get(1) : null;
+                        ActionCouple actionCouple = new ActionCouple(action, music);
+                        System.out.println("Action : " + actionCouple.action + " sur " + actionCouple.music);
+                        streamingService.executeActionCouple(actionCouple, context);
+                        isLoading.postValue(false);
                     }
-                }
-                System.out.println("Song : " + song + " " + actionCouple.music+ " " + actionCouple.action);
-                switch (actionCouple.action) {
-                    case "jouer":
-                        int port = IceService.play(actionCouple, song);
-                        System.out.println("Port : " + port);
-                        if (port == -1) {
-                            System.out.println("Song not found or action not found");
-                            break;
-                        }
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mediaPlayer = new MediaPlayer();
-                                try {
-                                    System.out.println("setDataSource");
-                                    Uri uri = Uri.parse("http://127.0.0.1:" + port);
-                                    mediaPlayer.setDataSource(context, uri);
-                                    mediaPlayer.prepare();
-                                    mediaPlayer.start();
-                                } catch (IOException e) {
-                                    mediaPlayer.release();
-                                    throw new RuntimeException(e);
-                                }
-                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        mediaPlayer.release();
-                                    }
-                                });
-                            }
-                        }).start();
-                        break;
-                    case "pause":
-                        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                        }
-                        break;
-                    case "relance":
-                        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-                            mediaPlayer.start();
-                        }
-                        break;
-                    case "baisser":
-                        if (mediaPlayer != null)
-                            mediaPlayer.setVolume(0.5f, 0.5f);
-                        break;
-                    case "augmenter":
-                        if (mediaPlayer != null)
-                            mediaPlayer.setVolume(1.0f, 1.0f);
-                        break;
-                    default:
-                        System.out.println("Action not found");
-                }
-                isLoading.postValue(false);
-                actionService.getActionCoupleMutableLiveData().removeObserver(this);
-            }
-        };
 
-        Observer<String> transcriptionObserver = new Observer<String>() {
+                    @Override
+                    public void onFailure(Call<ArrayList<String>> call, Throwable t) {
+                        System.err.println("Action retrieval error : " + t.getMessage());
+                        isLoading.postValue(false);
+                    }
+                });
+            }
+
             @Override
-            public void onChanged(String s) {
-                transcription.postValue(s);
-                actionService.getActionCoupleMutableLiveData().observeForever(actionCoupleObserver);
-                actionService.getAction(s);
-                transcriptionService.getTranscriptionMutableLiveData().removeObserver(this);
+            public void onFailure(Call<String> call, Throwable t) {
+                System.err.println("Transcription error : " + t.getMessage());
+                isLoading.postValue(false);
             }
-        };
+        });
+    }
 
-        transcriptionService.getTranscriptionMutableLiveData().observeForever(transcriptionObserver);
-        transcriptionService.transcribe(audioFileName);
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public MutableLiveData<Boolean> getIsLoadingMutableLiveData() {
         return isLoading;
-    }
-
-    private void observeTranscription() {
-        transcription.observeForever(newTranscription -> {
-            System.out.println("transcription : " + newTranscription);
-            // Send request to TAL
-        });
     }
 }

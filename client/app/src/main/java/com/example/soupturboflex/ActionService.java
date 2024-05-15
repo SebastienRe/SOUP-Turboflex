@@ -21,7 +21,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class ActionService {
     private static ActionService INSTANCE;
     private final TalApiService api;
-    private final MutableLiveData<ActionCouple> actionCouple = new MutableLiveData<>();
 
     private ActionService() {
         OkHttpClient client = new OkHttpClient.Builder()
@@ -43,25 +42,8 @@ public class ActionService {
         return INSTANCE;
     }
 
-    public void getAction(String transcription) {
+    public void getAction(String transcription, retrofit2.Callback<ArrayList<String>> callback) {
         Call<ArrayList<String>> call = api.getAction(transcription);
-        call.enqueue(new Callback<ArrayList<String>>() {
-            @Override
-            public void onResponse(Call<ArrayList<String>> call, Response<ArrayList<String>> response) {
-                ArrayList<String> actionArray = response.body();
-                String action = actionArray.get(0);
-                String music = actionArray.size() > 1 ? actionArray.get(1) : null;
-                actionCouple.postValue(new ActionCouple(action, music));
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<String>> call, Throwable t) {
-                System.err.println("error : "+t.getMessage());
-            }
-        });
-    }
-
-    public MutableLiveData<ActionCouple> getActionCoupleMutableLiveData() {
-        return this.actionCouple;
+        call.enqueue(callback);
     }
 }

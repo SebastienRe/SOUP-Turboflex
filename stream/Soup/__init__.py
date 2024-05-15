@@ -2,9 +2,9 @@
 #
 
 import Ice
-Ice.updateModule("Soup")
+Ice.updateModule("SOUP")
 
 # Modules:
-import Soup_ice
+import SOUP_ice
 
 # Submodules:
