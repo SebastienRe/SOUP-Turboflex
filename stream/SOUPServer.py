@@ -4,7 +4,6 @@ import sys
 Ice.loadSlice('SOUP.ice')
 import SOUP
 import uuid
-import os
 
 class PlayerI(SOUP.Player):
     def __init__(self, current=None):
@@ -32,7 +31,7 @@ class PlayerI(SOUP.Player):
         unique_id = str(uuid.uuid4())
         musicFileName = "./musiques/all/"+musicFileName
         output = 'sout=#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=raw,dst=:12345/'+unique_id+'.mp3}'
-        media = self.instance.media_new(musicFileName)
+        media = self.instance.media_new(musicFileName, output)
         player = self.instance.media_player_new()
         player.set_media(media)
         self.currentMusicFilePath = musicFileName
@@ -41,7 +40,7 @@ class PlayerI(SOUP.Player):
         # Add player to dictionary of active players
         self.player = player
 
-        return 'http://localhost:12345/'+unique_id+'.mp3'
+        return 'http://127.0.0.1:12345/'+unique_id+'.mp3'
     
     def play(self, current=None):
         self.player.play()
