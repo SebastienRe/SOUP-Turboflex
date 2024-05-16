@@ -1,17 +1,33 @@
 import sys
 import whisper
+from openai import OpenAI
 from flask import Flask
 from flask import request
 import os
 import uuid
+import yaml
 
 app = Flask(__name__)
 
 def transcribe_audio(file_path):
-    model = whisper.load_model("small")
-    result = model.transcribe(file_path, language="fr")
+    api_key = ""
+    with open('config.yaml', 'r') as config_file:
+        config = yaml.safe_load(config_file)
 
-    return result['text']
+        api_key = config['api_key']
+    
+    client = OpenAI(api_key=api_key)
+
+    audio_file = open(file_path, "rb")
+    transcript = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file,
+        language="fr"
+    )
+
+    audio_file.close()
+    
+    return transcript.text
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe():
@@ -25,10 +41,12 @@ def transcribe():
     try:
         file.write(audio_file.read())
     finally:
+        print("File closed")
         file.close()
     
     transcription = transcribe_audio(filename)
 
+    print("Removing audio file")
     os.remove(filename)
 
     print(transcription)

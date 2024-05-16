@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        outputFile = getExternalCacheDir().getAbsolutePath() + "/recording.3gp";
+        outputFile = getExternalCacheDir().getAbsolutePath() + "/recording.mp4";
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -112,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
         if (mediaRecorder == null) {
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
             mediaRecorder.setOutputFile(outputFile); // Set the file to save the recording
             try {
                 mediaRecorder.prepare();
+                mediaRecorder.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mediaRecorder.start();
         }
     }
 
